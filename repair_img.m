@@ -1,11 +1,17 @@
-function img=repair_img(img)
+function img=repair_img(img,mask)
     VO=spm_vol(img);
     img=spm_read_vols(VO);
-
-    %find and repair outliers
-    m=mean(img(:));
-    s=std(img(:));
-    img(img<m-s | img>m+s)=NaN;
+    
+    if ~exist('mask')
+        %find outliers
+        m=mean(img(:));
+        s=std(img(:));
+        img(img<m-s | img>m+s)=NaN;
+    else
+        img(~mask)=NaN;
+    end;
+    
+    %fill NaNs
     img=fillgaps(img);
 
     %save new
